@@ -126,7 +126,7 @@ public class scr_CellLogic : scr_CellSetup
                         }
                         NextCell = NextCell.CellData.NextCell;  //otherwise will look into next cells next cell reference
                     }
-                }                
+                }
             }
         }
 
@@ -299,6 +299,23 @@ public class scr_CellLogic : scr_CellSetup
     private void ConnectPieces(int StartingPieceValue, scr_CellOwner NextObject)
     {
         NextPiece = StartingPieceValue;
+
+        if (FoundCoordinates.Count > 2)
+        {
+            if (NextVectorCoordinate == FoundCoordinates[FoundCoordinates.Count - 2])
+            {
+                ManagerInstance.m_BoardLayout[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y] = StartingPiece;
+                CellScripts[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y].CellData.CurrentCellValue = ManagerInstance.m_BoardLayout[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y];
+                CellScripts[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y].transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+                CellScripts[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y].CellData.Anim.Play("Idle");
+                NextVectorCoordinate = FoundCoordinates[FoundCoordinates.Count-2];
+                StartingVectorCoordinate = NextVectorCoordinate;
+                FoundCoordinates.Remove(FoundCoordinates[FoundCoordinates.Count-1]);
+                ManagerInstance.m_CurrentSelected--;
+                return;
+            }
+        }
+
         if (StartingPiece != NextPiece)
         {
             return; //Make it so that they can't be selected

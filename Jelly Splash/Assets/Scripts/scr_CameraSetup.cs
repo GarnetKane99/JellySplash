@@ -18,10 +18,16 @@ public class scr_CameraSetup : MonoBehaviour
         if (ManagerInstance != null)
         {
             MainCam.orthographic = true;
-            if (ManagerInstance.m_BoardHeight == 10 && ManagerInstance.m_BoardWidth <= 5)
+            if (ManagerInstance.m_BoardHeight >= 8)
             {
                 MainCam.transform.position = new Vector3(0, 0, -10);
-                MainCam.orthographicSize = 7;
+                //MainCam.orthographicSize = 7;
+
+                for(int i = ManagerInstance.m_BoardHeight; i >= 8; i--)
+                {
+                    MainCam.orthographicSize++;
+                }
+
                 HeightChanged = true;
             }
             else if (ManagerInstance.m_BoardWidth % 2 == 0)
@@ -30,7 +36,7 @@ public class scr_CameraSetup : MonoBehaviour
             }
             if (!HeightChanged)
             {
-                MainCam.orthographicSize = ManagerInstance.m_BoardWidth + (ManagerInstance.m_BoardHeight > 7 ? 1 : 0);
+                //MainCam.orthographicSize = ManagerInstance.m_BoardWidth + (ManagerInstance.m_BoardHeight > 7 ? 1 : 0);
             }
         }
     }

@@ -17,6 +17,7 @@ public class scr_GameManager : MonoBehaviour
     [Tooltip("Minimum range of tiles that will be needed")]
     public int m_MinObject;
     [Tooltip("Maximum range of tiles -EXCLUSIVE- that will be needed")]
+    [Range(0,5)]
     public int m_MaxObject;
     public int m_MinSelected = 3;
     public int m_CurrentSelected = 0;
