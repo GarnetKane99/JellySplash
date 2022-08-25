@@ -9,50 +9,52 @@ public class scr_BoardController : MonoBehaviour
     //Reference Global Manager Instance
     [SerializeField] private scr_GameManager ManagerInstance = scr_GameManager.instance;
 
-    [SerializeField] private Slider WidthSlider, HeightSlider;
-    [SerializeField] private TextMeshProUGUI WidthText, HeightText;
+    [SerializeField] private Slider WidthSlider, HeightSlider, BugSlider;
+    [SerializeField] private TextMeshProUGUI WidthText, HeightText, BugText;
 
     private void Awake()
     {
         if (ManagerInstance == null)
         {
             ManagerInstance = FindObjectOfType<scr_GameManager>();
-            if (WidthSlider)
-            {
-                ManagerInstance.m_BoardWidth = (int)WidthSlider.value;
-            }
-            else
-            {
-                ManagerInstance.m_BoardHeight = (int)HeightSlider.value;
-            }
+
+            ManagerInstance.m_BoardWidth = (int)WidthSlider.value;
+
+            ManagerInstance.m_BoardHeight = (int)HeightSlider.value;
+
+            ManagerInstance.m_MaxObject = (int)BugSlider.value;
         }
     }
 
     // Start is called before the first frame update
     void Start()
     {
-        if (WidthSlider != null)
+        WidthSlider.onValueChanged.AddListener((v) =>
         {
-            WidthSlider.onValueChanged.AddListener((v) =>
+            WidthText.text = v.ToString("0");
+            if (ManagerInstance)
             {
-                WidthText.text = v.ToString("0");
-                if (ManagerInstance)
-                {
-                    ManagerInstance.m_BoardWidth = (int)WidthSlider.value;
-                }
-            });
-        }
-        else
+                ManagerInstance.m_BoardWidth = (int)WidthSlider.value;
+            }
+        });
+
+        HeightSlider.onValueChanged.AddListener((v) =>
         {
-            HeightSlider.onValueChanged.AddListener((v) =>
+            HeightText.text = v.ToString("0");
+            if (ManagerInstance)
             {
-                HeightText.text = v.ToString("0");
-                if (ManagerInstance)
-                {
-                    ManagerInstance.m_BoardHeight = (int)HeightSlider.value;
-                }
-            });
-        }
+                ManagerInstance.m_BoardHeight = (int)HeightSlider.value;
+            }
+        });
+
+        BugSlider.onValueChanged.AddListener((v) =>
+        {
+            BugText.text = v.ToString("0");
+            if (ManagerInstance)
+            {
+                ManagerInstance.m_MaxObject = (int)BugSlider.value;
+            }
+        });
     }
 
 }

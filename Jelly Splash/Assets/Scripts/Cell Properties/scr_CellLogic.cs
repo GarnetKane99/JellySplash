@@ -45,6 +45,10 @@ public class scr_CellLogic : scr_CellSetup
     {
         if (ManagerInstance.m_CurrentSelected >= ManagerInstance.m_MinSelected)
         {
+            if (ManagerInstance.RegularMode)
+            {
+                UpdateManagerDetails();
+            }
             StartCoroutine(this.UpdateBoard());
         }
         else if (ManagerInstance.m_CurrentSelected > 0)
@@ -55,6 +59,11 @@ public class scr_CellLogic : scr_CellSetup
         ResetBoard();
     }
 
+    void UpdateManagerDetails()
+    {
+        ManagerInstance.CurMoves++;
+    }
+
     #region Board Visualisation Methods
     //Board Update state
     public IEnumerator UpdateBoard()
@@ -62,6 +71,7 @@ public class scr_CellLogic : scr_CellSetup
         b_UpdatingBoard = true;
 
         scr_BoardCheck.ins.StartUpdating();
+        scr_GameManager.instance.CurCombo = FoundCoordinates.Count;
 
         int multiplier = 0;
         for (int i = 0; i < FoundCoordinates.Count; i++)
@@ -74,6 +84,9 @@ public class scr_CellLogic : scr_CellSetup
             ManagerInstance.CurrentScore += ManagerInstance.ScoreIncrease + (multiplier * ManagerInstance.ScoreMultiplier);
 
             scr_CellOwner cellToUpdate = CellScripts[FoundCoordinates[i].x, FoundCoordinates[i].y]; //Find the cell to update (these are in order of selection)
+            cellToUpdate.ScoreText.transform.position = Camera.main.WorldToScreenPoint(cellToUpdate.transform.position);
+            cellToUpdate.ScoreText.text = "+" + (ManagerInstance.ScoreIncrease + (multiplier * ManagerInstance.ScoreMultiplier)).ToString();
+            cellToUpdate.score.StartingLerp = true;
             cellToUpdate.CellData.Anim.Play("Pop"); //play specific pop animation
             yield return new WaitForSeconds(t_TimeBetweenPops); //coroutine to pause visuals briefly just for effect
         }
@@ -85,6 +98,7 @@ public class scr_CellLogic : scr_CellSetup
     //Update cells in order now
     private IEnumerator FinishUpdate()
     {
+        yield return new WaitForSeconds(1.0f);
         ReorganiseList();   //First thing to do is ensure that the found coordinates are in order to ensure pieces are being updated correctly and getting correct data
 
         int startX = CellScripts[FoundCoordinates[0].x, FoundCoordinates[0].y].CellData.TrueCoordinate.x;
@@ -94,6 +108,8 @@ public class scr_CellLogic : scr_CellSetup
         for (int i = 0; i < FoundCoordinates.Count; i++)    //Loop through all pieces (this is updated continuously)
         {
             scr_CellOwner CellFound = CellScripts[FoundCoordinates[i].x, FoundCoordinates[i].y];    //create reference to current cell
+            //CellFound.ScoreText.text = "";
+            //CellFound.score.StartingLerp = false;
             if (CellFound)
             {
                 //ShowMatrix(); *debugging stuff*
@@ -304,14 +320,15 @@ public class scr_CellLogic : scr_CellSetup
         {
             if (NextVectorCoordinate == FoundCoordinates[FoundCoordinates.Count - 2])
             {
-                ManagerInstance.m_BoardLayout[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y] = StartingPiece;
-                CellScripts[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y].CellData.CurrentCellValue = ManagerInstance.m_BoardLayout[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y];
-                CellScripts[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y].transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
-                CellScripts[FoundCoordinates[FoundCoordinates.Count-1].x, FoundCoordinates[FoundCoordinates.Count-1].y].CellData.Anim.Play("Idle");
-                NextVectorCoordinate = FoundCoordinates[FoundCoordinates.Count-2];
+                ManagerInstance.m_BoardLayout[FoundCoordinates[FoundCoordinates.Count - 1].x, FoundCoordinates[FoundCoordinates.Count - 1].y] = StartingPiece;
+                CellScripts[FoundCoordinates[FoundCoordinates.Count - 1].x, FoundCoordinates[FoundCoordinates.Count - 1].y].CellData.CurrentCellValue = ManagerInstance.m_BoardLayout[FoundCoordinates[FoundCoordinates.Count - 1].x, FoundCoordinates[FoundCoordinates.Count - 1].y];
+                CellScripts[FoundCoordinates[FoundCoordinates.Count - 1].x, FoundCoordinates[FoundCoordinates.Count - 1].y].transform.localScale = new Vector3(0.75f, 0.75f, 0.75f);
+                CellScripts[FoundCoordinates[FoundCoordinates.Count - 1].x, FoundCoordinates[FoundCoordinates.Count - 1].y].CellData.Anim.Play("Idle");
+                NextVectorCoordinate = FoundCoordinates[FoundCoordinates.Count - 2];
                 StartingVectorCoordinate = NextVectorCoordinate;
-                FoundCoordinates.Remove(FoundCoordinates[FoundCoordinates.Count-1]);
+                FoundCoordinates.Remove(FoundCoordinates[FoundCoordinates.Count - 1]);
                 ManagerInstance.m_CurrentSelected--;
+                ManagerInstance.ComboText--;
                 return;
             }
         }
@@ -341,6 +358,7 @@ public class scr_CellLogic : scr_CellSetup
 
     private void UpdateSelectedCells()
     {
+        ManagerInstance.ComboText++;
         ManagerInstance.m_CurrentSelected++;    //Update current selected count
         ManagerInstance.m_BoardLayout[StartingVectorCoordinate.x, StartingVectorCoordinate.y] = ManagerInstance.m_HighlightedCell;  //Update board data
     }
@@ -365,7 +383,7 @@ public class scr_CellLogic : scr_CellSetup
                 CellScripts[FoundCoordinates[x].x, FoundCoordinates[x].y].CellData.Anim.Play("Idle");   //reset animation
             }
         }
-
+        ManagerInstance.ComboText = 0;
         ManagerInstance.m_CurrentSelected = 0;
         StartingPiece = int.MaxValue;
         NextPiece = int.MaxValue;

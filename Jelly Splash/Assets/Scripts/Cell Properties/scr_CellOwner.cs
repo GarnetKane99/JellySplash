@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using TMPro;
 
 public class scr_CellOwner : MonoBehaviour
 {
@@ -49,6 +50,10 @@ public class scr_CellOwner : MonoBehaviour
     public AnimationClip PopClip;
     public AnimationClip EmptyClip;
     public cl_CellLogic CellData;
+
+    public TextMeshProUGUI ScoreText;
+
+    public scr_FloatingScore score;
 
     public void InitializeCellData()
     {

@@ -12,6 +12,12 @@ EditorBuildSettings:
     path: Assets/Scenes/sc_pre_EndlessMode.unity
     guid: 34a4eb6ae2e6d7045ba2145e21c2065e
   - enabled: 1
+    path: Assets/Scenes/sc_pre_RegularMode.unity
+    guid: f89b97f43cfe6a9468991a87f7116853
+  - enabled: 1
     path: Assets/Scenes/sc_MainLevel.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/sc_RegularMode.unity
+    guid: 44477126d30a30d4e9c16ff60e157dc3
   m_configObjects: {}
